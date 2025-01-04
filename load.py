@@ -32,24 +32,38 @@ import matplotlib.pyplot as plt
 
 
 def processImage(
-    data_dir, batch_size=32, img_height=180, img_width=180, valSplit=0.2
+    data_dir,
+    batch_size=32,
+    img_height=180,
+    img_width=180,
+    valSplit=0.2,
+    doSplit=True,
+    seed=123,
 ):
-    train_ds = tf.keras.utils.image_dataset_from_directory(
-        data_dir,
-        validation_split=valSplit,
-        subset="training",
-        seed=123,
-        image_size=(img_height, img_width),
-        batch_size=batch_size,
-    )
-    val_ds = tf.keras.utils.image_dataset_from_directory(
-        data_dir,
-        validation_split=valSplit,
-        subset="validation",
-        seed=123,
-        image_size=(img_height, img_width),
-        batch_size=batch_size,
-    )
+    if doSplit:
+        train_ds = tf.keras.utils.image_dataset_from_directory(
+            data_dir,
+            validation_split=valSplit,
+            subset="training",
+            seed=seed,
+            image_size=(img_height, img_width),
+            batch_size=batch_size,
+        )
+        val_ds = tf.keras.utils.image_dataset_from_directory(
+            data_dir,
+            validation_split=valSplit,
+            subset="validation",
+            seed=seed,
+            image_size=(img_height, img_width),
+            batch_size=batch_size,
+        )
+    else:
+        train_ds = tf.keras.utils.image_dataset_from_directory(
+            data_dir,
+            seed=seed,
+            image_size=(img_height, img_width),
+            batch_size=batch_size,
+        )
     class_names = train_ds.class_names
 
     normalization_layer = tf.keras.layers.Rescaling(1.0 / 255)
