@@ -1,5 +1,9 @@
 .mypy_cache
+__pycache__
 dogncat_set
 venv
 eczemads
 git*
+tuner
+
+

@@ -1,7 +1,5 @@
-import os
 import tensorflow as tf
 import tensorflow_datasets as tfds
-import matplotlib.pyplot as plt
 import numpy as np
 import load
 import pathlib
@@ -45,7 +43,7 @@ model = tf.keras.Sequential(
         tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(num_classes),
+        tf.keras.layers.Dense(num_classes, activation="softmax"),
     ]
 )
 
