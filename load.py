@@ -2,29 +2,6 @@ import tensorflow as tf
 import pathlib
 
 
-# def get_label(file_path):
-#   # Convert the path to a list of path components
-#   parts = tf.strings.split(file_path, os.path.sep)
-#   # The second to last is the class-directory
-#   one_hot = parts[-2] == class_names
-#   # Integer encode the label
-#   return tf.argmax(one_hot)
-#
-# def decode_img(img):
-#   # Convert the compressed string to a 3D uint8 tensor
-#   img = tf.io.decode_jpeg(img, channels=3)
-#   # Resize the image to the desired size
-#   return tf.image.resize(img, [img_height, img_width])
-#
-#
-# def process_path(file_path):
-#   label = get_label(file_path)
-#   # Load the raw data from the file as a string
-#   img = tf.io.read_file(file_path)
-#   img = decode_img(img)
-#   return img, label
-
-
 def processImage(
     data_dir,
     batch_size=32,
