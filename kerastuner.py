@@ -7,15 +7,18 @@ import pathlib
 
 data_dir = pathlib.Path("./eczemads/")
 
+img_height = 180
+img_width = 180
+
 (train_ds, val_ds, class_names) = load.processImage(
     data_dir,
     batch_size=16,
+    img_height=img_height,
+    img_width=img_width,
 )
 
 num_classes = len(class_names)
 
-img_height = (180,)
-img_width = (180,)
 
 data_augmentation = keras.Sequential(
     [
