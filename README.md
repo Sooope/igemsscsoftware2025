@@ -1,11 +1,16 @@
 # Model Training
 
+https://drive.google.com/file/d/1Qe9qNc8CuyG74mxAaFAf2L3ERFZ4wmLv/view?usp=sharing
 
+Niggerlink combined
 ---
 
 # Source
 
 [link to data](https://huggingface.co/datasets/resyhgerwshshgdfghsdfgh/SD-198?clone=true)
+
+https://www.kaggle.com/datasets/seyamalam/eczema?resource=download They dont have DOI citation
+https://www.kaggle.com/datasets/divyaiit/enhanced-skin-disease-dataset-with-clahe-and-gamma
 
 keras tuner:
 
