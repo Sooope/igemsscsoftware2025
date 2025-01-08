@@ -37,7 +37,6 @@ def processImage(
     AUTOTUNE = tf.data.AUTOTUNE
     train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
     val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
     return (train_ds, val_ds, class_names)
 
 
