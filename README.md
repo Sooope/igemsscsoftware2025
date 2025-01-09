@@ -9,8 +9,8 @@ Drive
 
 [link to data](https://huggingface.co/datasets/resyhgerwshshgdfghsdfgh/SD-198?clone=true)
 
-https://www.kaggle.com/datasets/seyamalam/eczema?resource=download They dont have DOI citation
-https://www.kaggle.com/datasets/divyaiit/enhanced-skin-disease-dataset-with-clahe-and-gamma
+[dataset](https://www.kaggle.com/datasets/seyamalam/eczema?resource=download) They dont have DOI citation
+[dataset](https://www.kaggle.com/datasets/divyaiit/enhanced-skin-disease-dataset-with-clahe-and-gamma)
 
 keras tuner:
 
