@@ -15,7 +15,7 @@ img_width = 180
 
 (train_ds, val_ds, class_names) = load.processImage(
     data_dir,
-    batch_size=16,
+    batch_size=32,
     img_height=img_height,
     img_width=img_width,
 )
@@ -40,7 +40,12 @@ class HyperModel(keras_tuner.HyperModel):
         units2=hp.Int("units_2", min_value=32, max_value=256, step=32)
         unitsC1=hp.Int("unit_C1", min_value=16, max_value=128, step=16)
         unitsC2=hp.Int("unit_C2", min_value=16, max_value=128, step=16)
-
+        
+        IsMaxPooling = hp.Boolean("isMaxPooling")
+        if(IsMaxPooling):
+            pooling=keras.layers.MaxPooling2D()
+        else:
+            pooling=keras.layers.AveragePooling2D()
         model = keras.Sequential([data_augmentation])
 
         model.add(
@@ -48,9 +53,9 @@ class HyperModel(keras_tuner.HyperModel):
                 hp.Int("unit_C0", min_value=16, max_value=128, step=16),
                 kernel_size=(Kernal_size, Kernal_size),
                 activation="relu",
-            ),
-            keras.layers.MaxPooling2D(),
+            ),pooling
         )
+        
 
         if hp.Boolean("CNN_1"):
             model.add(
@@ -59,7 +64,7 @@ class HyperModel(keras_tuner.HyperModel):
                     kernel_size=(Kernal_size, Kernal_size),
                     activation="relu",
                 ),
-                keras.layers.MaxPooling2D(),
+                pooling
             )
 
         if hp.Boolean("CNN_2"):
@@ -69,7 +74,7 @@ class HyperModel(keras_tuner.HyperModel):
                     kernel_size=(Kernal_size, Kernal_size),
                     activation="relu",
                 ),
-                keras.layers.MaxPooling2D(),
+                pooling
             )
 
         model.add(keras.layers.Flatten())
@@ -109,6 +114,7 @@ class HyperModel(keras_tuner.HyperModel):
 
 hm=HyperModel()
 
+#Hyperband
 tuner = keras_tuner.Hyperband(
     hypermodel=hm,
     objective="val_loss",
@@ -117,6 +123,34 @@ tuner = keras_tuner.Hyperband(
     directory="tuner",
     project_name="CNN_D_U",
 )
+
+# #RandomSearch
+# tuner = keras_tuner.RandomSearch(
+#     hypermodel=hm,
+#     objective="val_loss",
+#     overwrite=True,
+#     directory="tuner",
+#     project_name="CNN_D_U",
+# )
+
+# #Bayesian
+# tuner = keras_tuner.BayesianOptimization(
+#     hypermodel=hm,
+#     objective="val_loss",
+#     overwrite=True,
+#     directory="tuner",
+#     project_name="CNN_D_U",
+# )
+
+# #GridSearch
+# tuner = keras_tuner.GridSearch(
+#     hypermodel=hm,
+#     objective="val_loss",
+#     overwrite=True,
+#     directory="tuner",
+#     project_name="CNN_D_U",
+# )
+
 
 tuner.search_space_summary()
 tuner.search(train_ds, epochs=epochs, validation_data=val_ds)
