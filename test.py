@@ -65,11 +65,9 @@ model = keras.Sequential(
     [
         keras.layers.Conv2D(32, 3, activation="relu"),
         keras.layers.MaxPooling2D(),
-        keras.layers.Conv2D(32, 3, activation="relu"),
+        keras.layers.Conv2D(64, 3, activation="relu"),
         keras.layers.MaxPooling2D(),
-        keras.layers.Conv2D(32, 3, activation="relu"),
-        keras.layers.MaxPooling2D(),
-        keras.layers.Dropout(0.2),
+        keras.layers.Conv2D(128, 3, activation="relu"),
         keras.layers.Flatten(),
         keras.layers.Dense(64, activation="relu"),
         keras.layers.Dense(num_classes, activation="relu"),
