@@ -13,7 +13,7 @@ img_height = 180
 img_width = 180
 
 epochs=100
-layers=1
+layers=2
 units=64
 dropout=True
 
@@ -44,29 +44,32 @@ model = keras.Sequential(
         data_augmentation,
         keras.layers.Conv2D(32, (3,3), activation="relu"),
         keras.layers.MaxPooling2D(),
-        # keras.layers.Conv2D(64, (3,3), activation="relu"),
-        # keras.layers.MaxPooling2D(),
-        # keras.layers.Conv2D(64, (3,3), activation="relu"),
-        # keras.layers.MaxPooling2D(),
+        keras.layers.Conv2D(64, (3,3), activation="relu"),
+        keras.layers.MaxPooling2D(),
+        keras.layers.Conv2D(64, (3,3), activation="relu"),
+        keras.layers.MaxPooling2D(),
     ]
 )
 model.add(keras.layers.Flatten())
 
-# for i in range(layers):
-#     model.add(            
-#             keras.layers.Dense(
-#             units,kernel_regularizer=keras.regularizers.l2(0.001),
-#             activation="relu",
-#         ),model.add(keras.layers.Dropout(0.5))
-# )
+for i in range(layers):
+    model.add(            
+            keras.layers.Dense(
+            units,
+            # kernel_regularizer=keras.regularizers.l2(0.001),
+            activation="relu",
+        )
+            ,model.add(keras.layers.Dropout(0.5))
+            # ,model.add(keras.layers.BatchNormalization())
+)
     
-# model.add(keras.layers.Dense(128, activation="relu"))
+model.add(keras.layers.Dense(128, activation="relu"))
 
-# model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dropout(0.5))
 
-# model.add(keras.layers.Dense(256, activation="relu"))
+model.add(keras.layers.Dense(256, activation="relu"))
 
-# model.add(keras.layers.Dropout(0.5))
+model.add(keras.layers.Dropout(0.5))
 
 
 model.add(keras.layers.Dense(num_classes, activation="softmax"))
