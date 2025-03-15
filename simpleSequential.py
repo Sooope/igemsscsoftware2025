@@ -1,59 +1,114 @@
 import tensorflow as tf
-import tensorflow_datasets as tfds
+import os
+from tensorflow import keras
 import numpy as np
-import load
+import Models.load as load
 import pathlib
+import matplotlib.pyplot as plt
 
-epochs = 50
-data_dir = pathlib.Path("./flower_photos")
-train_ds, val_ds, class_names = load.processImage(data_dir)
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+trail='E50_Conv33_64_Conv22_128_256_512_FC256_128_64_BN'
 
-while True:
-    labeltxtGen = input("Generate labels.txt?(y/n):")
-    if labeltxtGen == "y":
-        o = open("labels.txt", "w")
-        for item in class_names:
-            o.write(item)
-            o.write("\n")
-        o.close()
-        break
-    elif labeltxtGen == "n":
-        break
+data_dir = pathlib.Path("./Set/")
 
+img_height = 256
+img_width = 256
 
-# while True:
-#     i = input(f"Epochs? (default={epochs}):")
-#     if i == "":
-#         break
-#     elif i.isdigit():
-#         epochs = int(i)
-#         break
+epochs=50
+units=64
+
+l2=kernel_regularizer=keras.regularizers.l2(1e-3)
+
+(train_ds, val_ds, class_names) = load.processImage(
+    data_dir,
+    batch_size=16,
+    img_height=img_height,
+    img_width=img_width,
+)
 
 num_classes = len(class_names)
 
-# HERE DEFINES THE MODEL
-model = tf.keras.Sequential(
+data_augmentation = keras.Sequential(
     [
-        tf.keras.layers.Conv2D(32, 3, activation="relu"),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(32, 3, activation="relu"),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(32, 3, activation="relu"),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(128, activation="relu"),
-        tf.keras.layers.Dense(num_classes, activation="softmax"),
+        keras.layers.RandomFlip(
+            "horizontal", input_shape=(img_height, img_width, 3)
+        ),
+        keras.layers.RandomRotation(0.1),
+        keras.layers.RandomZoom(0.1),
     ]
 )
 
-# HERE COMPILES
+
+def convBlk(output_channel,kernel_size):
+    convBlk =keras.Sequential([
+            keras.layers.Conv2D(output_channel, (kernel_size,kernel_size), activation="relu", padding ="same"),
+            keras.layers.Conv2D(output_channel, (kernel_size,kernel_size), activation="relu", padding ="same"),
+            keras.layers.MaxPooling2D(),])
+    return convBlk
+
+model = keras.Sequential(
+    [
+        data_augmentation,
+        keras.layers.BatchNormalization(),
+        convBlk(64,3),
+        convBlk(128,2),
+        convBlk(256,2),
+        # convBlk(512,2),
+    ]
+)
+model.add(keras.layers.Flatten())
+
+# model.add(keras.layers.Dense(256,activation="relu"))
+
+model.add(keras.layers.Dropout(0.9))
+model.add(keras.layers.BatchNormalization())
+
+    
+model.add(keras.layers.Dense(128, activation="relu"))
+# model.add(keras.layers.Dense(64, activation="relu"))
+
+
+model.add(keras.layers.Dropout(0.9))
+
+model.add(keras.layers.Dense(num_classes, activation="softmax"))
+
+
 model.compile(
     optimizer="adam",
-    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    loss="sparse_categorical_crossentropy",
     metrics=["accuracy"],
 )
 
-model.fit(train_ds, validation_data=val_ds, epochs=epochs)
+log_dir = './logs/'
+tb_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1) 
 
-load.savetf(model)
+history=model.fit(train_ds, validation_data=val_ds, epochs=epochs,callbacks=[tb_callback])
+
+
+# acc = history.history['accuracy']
+# val_acc = history.history['val_accuracy']
+
+# loss = history.history['loss']
+# val_loss = history.history['val_loss']
+
+# epochs_range = range(epochs)
+
+# plt.figure(figsize=(8, 8))
+# plt.subplot(1, 2, 1)
+# plt.plot(epochs_range, acc, label='Training Accuracy')
+# plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+# plt.legend(loc='lower right')
+# plt.title('Training and Validation Accuracy')
+
+# plt.subplot(1, 2, 2)
+# plt.plot(epochs_range, loss, label='Training Loss')
+# plt.plot(epochs_range, val_loss, label='Validation Loss')
+# plt.legend(loc='upper right')
+# plt.title('Training and Validation Loss')
+# plt.savefig(trail+'.png')
+
+
+model.summary()
+
+load.savetf(model,trail)
