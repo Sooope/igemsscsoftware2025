@@ -1,0 +1,84 @@
+% !TeX root = TechnicalReport.tex
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{titlesec}       % For title formatting
+\usepackage{authblk}        % For author affiliations
+\usepackage{xcolor}         % For colored text
+\usepackage{lipsum}         % For dummy text (remove in your actual document)
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+
+
+\captionsetup[figure]{hypcap=false}
+% %subsubsubsection
+% \setcounter{secnumdepth}{4}
+
+% \titleformat{\paragraph}
+% {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+% \titlespacing*{\paragraph}
+% {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+%Figure under multicol
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+% Set margins
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% Custom title format
+\titleformat{\title}
+  {\normalfont\fontsize{16}{20}\bfseries\centering}{\thetitle}{1em}{}
+  
+% Author/affiliation styling
+\renewcommand\Authfont{\normalfont\normalsize}
+\renewcommand\Affilfont{\normalfont\small\itshape}
+% Abstract styling
+\renewenvironment{abstract}{\small\noindent\ignorespaces}{\par\noindent\rule{\textwidth}{0.4pt}}
+
+% Document content
+\title{Automatic Eczema Diagnosis platform: A Technical Analyzation Report on Possible Approaches}
+\author[1]{Zeng Aiding}
+\author[2]{Song Yuk Sum}
+\affil[1]{dingandy388@gmail.com}
+\affil[2]{s2021084@stu.ssc.edu.hk; The author has significant contribution in the set-up stage investigation and research.}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% Add horizontal line below title
+\noindent\rule{\textwidth}{0.4pt}
+
+% Custom abstract section
+\begin{abstract}
+  \noindent\textbf{Abstract:} 
+  
+  Eczema diagnosis was highly relying on manual diagnosis from professional dermatologists. Although there are works on deep learning approaches on related problems, there is no work on making a general platform on eczema diagnosis. We proposed a cross-platform eczema diagnosis platform with deep learning models that provide initial diagnosis of eczema, classification of eczema subtypes and a personal suggestion model. The platform aims to provide support to eczema diagnosis and provide eczema related information to users. The report includes a detailed technical analyzation toward the development of the platform. We separated the development into three main stages, including data, model and software. Each stage would include several small parts, which is data collection, data augmentation, model design, model training, model evaluation, model deployment, software development and UI/UX design. In each part, we made detailed analyzation toward possible approaches.
+
+  The model part is the key part of the report, where we analyzed the possible approaches toward three different models, initial diagnosis model which is a binary classification problem, subtypes classification model which is an image classification problem and the suggestion model which is a NLP problem. Among the approaches, we mainly focus on deep learning approaches, including NLP transformer(like BERT) for initial diagnosis model and suggestion model, convolutional neural networks(like ResNet) and object detection algorithms for classification model. Furthermore, the report analyzed the methodologies toward data and software development, including how to collect data and how to augment data. Some other possible features and concerns are also included in this report.
+\end{abstract}
+
+\vspace{2em} % Space before main text
+
+\begin{multicols}{2}
+  % Start main content
+\input{Introduction.tex}
+\input{Problem_Analyzation.tex}
+\input{Approaches.tex}
+\input{OtherFeature.tex}
+\input{Concern.tex}
+\input{Conclusion.tex}
+\end{multicols}
+\bibliographystyle{plain}
+\bibliography{Bibl.bib}
+\end{document}

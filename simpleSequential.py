@@ -1,31 +1,33 @@
 import tensorflow as tf
+import os
 from tensorflow import keras
 import numpy as np
-import load
+import Models.load as load
 import pathlib
 import matplotlib.pyplot as plt
 
-trail=input("Enter the trail name")
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-data_dir = pathlib.Path("./eczemads/")
+trail='E50_Conv33_64_Conv22_128_256_512_FC256_128_64_BN'
 
-img_height = 180
-img_width = 180
+data_dir = pathlib.Path("./Set/")
 
-epochs=100
-layers=2
+img_height = 256
+img_width = 256
+
+epochs=50
 units=64
-dropout=True
+
+l2=kernel_regularizer=keras.regularizers.l2(1e-3)
 
 (train_ds, val_ds, class_names) = load.processImage(
     data_dir,
-    batch_size=32,
+    batch_size=16,
     img_height=img_height,
     img_width=img_width,
 )
 
 num_classes = len(class_names)
-
 
 data_augmentation = keras.Sequential(
     [
@@ -38,39 +40,36 @@ data_augmentation = keras.Sequential(
 )
 
 
+def convBlk(output_channel,kernel_size):
+    convBlk =keras.Sequential([
+            keras.layers.Conv2D(output_channel, (kernel_size,kernel_size), activation="relu", padding ="same"),
+            keras.layers.Conv2D(output_channel, (kernel_size,kernel_size), activation="relu", padding ="same"),
+            keras.layers.MaxPooling2D(),])
+    return convBlk
 
 model = keras.Sequential(
     [
         data_augmentation,
-        keras.layers.Conv2D(32, (3,3), activation="relu"),
-        keras.layers.MaxPooling2D(),
-        keras.layers.Conv2D(64, (3,3), activation="relu"),
-        keras.layers.MaxPooling2D(),
-        keras.layers.Conv2D(64, (3,3), activation="relu"),
-        keras.layers.MaxPooling2D(),
+        keras.layers.BatchNormalization(),
+        convBlk(64,3),
+        convBlk(128,2),
+        convBlk(256,2),
+        # convBlk(512,2),
     ]
 )
 model.add(keras.layers.Flatten())
 
-for i in range(layers):
-    model.add(            
-            keras.layers.Dense(
-            units,
-            # kernel_regularizer=keras.regularizers.l2(0.001),
-            activation="relu",
-        )
-            ,model.add(keras.layers.Dropout(0.5))
-            # ,model.add(keras.layers.BatchNormalization())
-)
+# model.add(keras.layers.Dense(256,activation="relu"))
+
+model.add(keras.layers.Dropout(0.9))
+model.add(keras.layers.BatchNormalization())
+
     
 model.add(keras.layers.Dense(128, activation="relu"))
+# model.add(keras.layers.Dense(64, activation="relu"))
 
-model.add(keras.layers.Dropout(0.5))
 
-model.add(keras.layers.Dense(256, activation="relu"))
-
-model.add(keras.layers.Dropout(0.5))
-
+model.add(keras.layers.Dropout(0.9))
 
 model.add(keras.layers.Dense(num_classes, activation="softmax"))
 
@@ -81,32 +80,35 @@ model.compile(
     metrics=["accuracy"],
 )
 
+log_dir = './logs/'
+tb_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1) 
 
-history=model.fit(train_ds, validation_data=val_ds, epochs=epochs)
+history=model.fit(train_ds, validation_data=val_ds, epochs=epochs,callbacks=[tb_callback])
 
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
 
-loss = history.history['loss']
-val_loss = history.history['val_loss']
+# acc = history.history['accuracy']
+# val_acc = history.history['val_accuracy']
 
-epochs_range = range(epochs)
+# loss = history.history['loss']
+# val_loss = history.history['val_loss']
 
-plt.figure(figsize=(8, 8))
-plt.subplot(1, 2, 1)
-plt.plot(epochs_range, acc, label='Training Accuracy')
-plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-plt.legend(loc='lower right')
-plt.title('Training and Validation Accuracy')
+# epochs_range = range(epochs)
 
-plt.subplot(1, 2, 2)
-plt.plot(epochs_range, loss, label='Training Loss')
-plt.plot(epochs_range, val_loss, label='Validation Loss')
-plt.legend(loc='upper right')
-plt.title('Training and Validation Loss')
-plt.savefig(trail+'.png')
+# plt.figure(figsize=(8, 8))
+# plt.subplot(1, 2, 1)
+# plt.plot(epochs_range, acc, label='Training Accuracy')
+# plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+# plt.legend(loc='lower right')
+# plt.title('Training and Validation Accuracy')
+
+# plt.subplot(1, 2, 2)
+# plt.plot(epochs_range, loss, label='Training Loss')
+# plt.plot(epochs_range, val_loss, label='Validation Loss')
+# plt.legend(loc='upper right')
+# plt.title('Training and Validation Loss')
+# plt.savefig(trail+'.png')
 
 
 model.summary()
 
-load.savetf(model)
+load.savetf(model,trail)

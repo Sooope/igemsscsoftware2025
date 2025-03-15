@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 import keras_tuner
-import load
+import Models.load as load
 import pathlib
 import matplotlib.pylab as plt
 
