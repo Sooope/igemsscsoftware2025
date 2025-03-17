@@ -22,5 +22,5 @@
     },
     "task": {"type": "evaluator", "index": 0}
 },
-{"Note that it is unecessary to setup 'cluster' which is exclusive to evaluator"}
+{"Note that it is unecessary to setup 'cluster' but is only exclusive to evaluator"}
 
