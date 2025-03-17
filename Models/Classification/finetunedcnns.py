@@ -29,8 +29,9 @@ def getModel(class_num=1,weights=None,base="mnv2"):
         case "dn121":
             # DenseNet121
             baseModel = keras.applications.DenseNet121(include_top=False, weights=weights)
-
-
+        case _:
+            print("Wrong model id, fallback to EfficientNetV2B3")
+            baseModel = keras.applications.EfficientNetV2B3(include_top=False, weights=weights)
 
     model = keras.Sequential([load.data_augmentation(), baseModel, keras.layers.Flatten()])
     for i in range(num_hidden):
@@ -42,6 +43,7 @@ def getModel(class_num=1,weights=None,base="mnv2"):
 if __name__=="__main__":
     ds = "Eczema"
     name = "EfficientNetV2B3"
+    base = "env2b3"
     Epoches = 10
     Batch_size = 32
 
@@ -54,7 +56,11 @@ if __name__=="__main__":
     train_data, val_data, class_names = load.processImage(
         data_set=ds, batch_size=Batch_size
     )
-    model = getModel(class_num=len(class_names), weights=weights)
+    model = getModel(
+        class_num=len(class_names), 
+        weights=weights,
+        base=base
+    )
     model.compile(
         optimizer="adam",
         loss="sparse_categorical_crossentropy",
