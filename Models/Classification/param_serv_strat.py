@@ -4,7 +4,6 @@
 #
 
 import tensorflow as tf
-import portpicker
 import os
 import json
 from finetunedcnns import getModel
