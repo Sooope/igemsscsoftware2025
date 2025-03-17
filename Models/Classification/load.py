@@ -58,11 +58,6 @@ def saveModel(model,name):
     # with open('model_quatified.tflite', 'wb') as f:
     #     f.write(tflite_model_quantized)
 
-
-if __name__ == "__main__":
-    data_dir = pathlib.Path("./flower_photos")
-    print(processImage(data_dir))
-
 def data_augmentation():
     data_augmentation = tf.keras.Sequential(
         [
