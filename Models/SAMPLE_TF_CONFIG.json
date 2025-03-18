@@ -1,0 +1,26 @@
+{
+    "cluster": {
+        "worker": ["host1:port", "host2:port", "host3:port"],
+        "ps": ["host4:port", "host5:port"]
+    },
+    "task": {
+        "type": "worker", 
+        "index": 1
+    }
+},
+
+{"This is a sample config for TF_CONFIG when running distributed training"},
+{"'task' part specifies the role of the current task in the cluster"},
+{"valid roles are 'chief'(coordinator), 'worker', 'ps', 'evaluator'"},
+{"'ps' role is only available in running ParameterServerStrategy"},
+
+
+{"Below is sample config for 'evaluator'"},
+{
+    "cluster": {
+        "evaluator": ["host7:port"]
+    },
+    "task": {"type": "evaluator", "index": 0}
+},
+{"Note that it is unecessary to setup 'cluster' but is only exclusive to evaluator"}
+
