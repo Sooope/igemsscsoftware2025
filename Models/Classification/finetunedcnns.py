@@ -34,7 +34,7 @@ def getModel(class_num=1,weights=None,base="mnv2"):
             baseModel = keras.applications.EfficientNetV2B3(include_top=False, weights=weights)
 
     model = keras.Sequential([load.data_augmentation(), baseModel, keras.layers.Flatten()])
-    for i in range(num_hidden):
+    for i in range(len(num_neurons)):
         model.add(keras.layers.Dense(num_neurons[i], activation="relu"))
     model.add(keras.layers.Dense(class_num, activation="softmax"))
 
@@ -48,8 +48,7 @@ if __name__=="__main__":
     Batch_size = 32
 
     # top parameters
-    num_hidden = 1
-    num_neurons = [1000]
+    num_neurons = [1024, 512]
 
     # weights of basemodel
     weights = None
