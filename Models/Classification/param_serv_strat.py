@@ -10,7 +10,7 @@ from CNNs import getModel
 import load
 import datetime
 
-config = 'TF_CONFIG.json'
+config = 'Models\Classification\TF_CONFIG.json'
 
 weights = None
 
