@@ -1,10 +1,13 @@
 import tensorflow as tf
 import pathlib
+from sklearn.utils import class_weight
 
 dir = "./Data/"
 weights_dir = "./Models/Classification/weights/"
 tflite_dir = "./Models/Classification/tflite/"
 model_dir = "./Models/Classification/models/"
+
+
 def processImage(
     data_set,
     batch_size=32,
@@ -44,6 +47,14 @@ def processImage(
     val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
     return (train_ds, val_ds, class_names)
 
+# Class weight for imbalance dataset
+def getClassWeight(train_ds):
+    class_weights = class_weight.compute_class_weight(
+        'balanced',
+        classes = train_ds.class_names,
+        y = train_ds.classes
+    )
+    return dict(enumerate(class_weights))
 
 def saveModel(model,name):
     model.save_weights(weights_dir+name)

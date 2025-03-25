@@ -10,7 +10,7 @@ from CNNs import getModel
 import load
 import datetime
 
-config = 'Models\Classification\TF_CONFIG.json'
+config = 'Models/Classification/TF_CONFIG.json'
 
 weights = None
 
@@ -103,6 +103,7 @@ else:
         validation_data=val_data,
         epochs=Epoches,
         callbacks=callbacks,
+        class_weight=load.getClassWeight(train_data),
     )
     model.save(model, name)
 
