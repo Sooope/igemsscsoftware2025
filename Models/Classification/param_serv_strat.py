@@ -6,7 +6,7 @@
 import tensorflow as tf
 import os
 import json
-from finetunedcnns import getModel
+from CNNs import getModel
 import load
 import datetime
 

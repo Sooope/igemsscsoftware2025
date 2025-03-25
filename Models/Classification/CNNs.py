@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 import load
 import datetime
+import CBAM
 
 
 def getModel(class_num=1,weights=None,base="mnv2"):
@@ -14,6 +15,8 @@ def getModel(class_num=1,weights=None,base="mnv2"):
         case "rn50":
             # ResNet50
             baseModel = keras.applications.ResNet50(include_top=False, weights=weights)
+        case "rn101":
+            baseModel = keras.applications.ResNet101(include_top=False, weights=weights)
         case "mnv2":
             # MobileNetV2
             baseModel = keras.applications.MobileNetV2(include_top=False, weights=weights)
@@ -29,6 +32,12 @@ def getModel(class_num=1,weights=None,base="mnv2"):
         case "dn121":
             # DenseNet121
             baseModel = keras.applications.DenseNet121(include_top=False, weights=weights)
+        case "CBAM_RN50":
+            # CBAM ResNet50
+            baseModel = CBAM.CBAM_ResNet50()
+        case "CBAM_RN101":
+            # CBAM ResNet101
+            baseModel = CBAM.CBAM_ResNet101()
         case _:
             print("Wrong model id, fallback to EfficientNetV2B3")
             baseModel = keras.applications.EfficientNetV2B3(include_top=False, weights=weights)
