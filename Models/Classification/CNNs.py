@@ -5,7 +5,7 @@ import datetime
 import CBAM
 
 
-def getModel(class_num=1,weights=None,base="mnv2"):
+def getModel(num_neurons,class_num,weights=None,base="mnv2"):
     # Choose base model by changing keras.applicatoin._____
 
     match base:
@@ -65,6 +65,7 @@ if __name__=="__main__":
         data_set=ds, batch_size=Batch_size
     )
     model = getModel(
+        num_neurons=num_neurons,
         class_num=len(class_names), 
         weights=weights,
         base=base

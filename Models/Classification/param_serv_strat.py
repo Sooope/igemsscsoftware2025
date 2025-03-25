@@ -55,7 +55,6 @@ else:
     NUM_PS=1
 
     # top parameters
-    num_hidden = 1
     num_neurons = [1000]
 
     # weights of basemodel
