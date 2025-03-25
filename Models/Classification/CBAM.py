@@ -1,4 +1,4 @@
-#self-implementation of CBAM
+# self-implementation of CBAM
 # For more information, please refer to the paper: https://arxiv.org/abs/1807.06521
 
 import tensorflow as tf
