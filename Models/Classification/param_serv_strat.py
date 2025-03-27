@@ -1,7 +1,5 @@
-#
 # https://www.tensorflow.org/api_docs/python/tf/distribute/Server
 # https://www.tensorflow.org/tutorials/distribute/parameter_server_training#clusters_in_the_real_world
-#
 
 import tensorflow as tf
 import os
@@ -9,6 +7,8 @@ import json
 from CNNs import getModel
 import load
 import datetime
+
+tf.config.optimizer.set_jit(False)
 
 config = 'Models/Classification/TF_CONFIG.json'
 
@@ -18,8 +18,8 @@ with open(config, 'r') as src:
     confjson = json.load(src)
 os.environ["TF_CONFIG"] = json.dumps(confjson)
 
-
-
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "0"  # Enable full logging
+os.environ["GRPC_VERBOSITY"] = "DEBUG"    # Enable gRPC debug logs
 
 cluster_resolver = tf.distribute.cluster_resolver.TFConfigClusterResolver()
 if cluster_resolver.task_type in ("worker", "ps"):
@@ -46,8 +46,8 @@ else:
     # Run the coordinator.
 
     ds = "Eczema"
-    name = "EfficientNetV2B3"
-    base = "env2b3"
+    name = "ResNet50"
+    base = "rn50"
     Epoches = 10
     Batch_size = 32
 
@@ -76,6 +76,7 @@ else:
 
     with strategy.scope():
         model = getModel(
+            num_neurons=num_neurons,
             class_num=len(class_names), 
             weights=weights,
             base=base
@@ -88,7 +89,7 @@ else:
 
     working_dir = "tmp/fit/"
     log_dir = os.path.join(working_dir,"logs/",datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
-    ckpt_filepath = os.path.join(working_dir, "ckpt")
+    ckpt_filepath = os.path.join(working_dir, "ckpt.keras")
     backup_dir = os.path.join(working_dir, "backup")
 
     # tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
