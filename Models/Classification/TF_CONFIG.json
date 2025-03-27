@@ -1,10 +1,11 @@
 {
     "cluster": {
-        "worker": ["host1:port", "host2:port", "host3:port"],
-        "ps": ["host4:port", "host5:port"]
+        "worker": ["172.100.22.15:2222", "172.100.22.16:2222"],
+        "ps": ["172.100.22.18:2222"],
+        "chief":["172.100.22.17:2222"]
     },
     "task": {
-        "type": "worker", 
-        "index": 1
+        "type": "chief", 
+        "index": 0
     }
 }
