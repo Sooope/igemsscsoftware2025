@@ -37,7 +37,6 @@ if cluster_resolver.task_type in ("worker", "ps"):
         protocol=cluster_resolver.rpc_layer or "grpc",
         start=True)
     server.join()
-
 elif cluster_resolver.task_type == "evaluator":
     # Run sidecar evaluation
     # Not written yet

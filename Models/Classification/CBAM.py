@@ -51,7 +51,7 @@ def spacial_attention(input_feature):
 def cbam_block(cbam_feature):
     return spacial_attention(channal_attention(cbam_feature))
 
-# Residual bottleneck block with CBAM
+# Residual bottleneck block with CBAM (For ResNet50+)
 class CBAM_BottleneckBlock(keras.Model):
 
     def __init__(self, channels, dowsampling=False):
