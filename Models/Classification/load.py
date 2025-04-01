@@ -51,7 +51,7 @@ def processImage(
 # Class weight for imbalance dataset
 def getClassWeight(train_ds):
     labels = []
-    for _,label in train_ds():
+    for _,label in train_ds:
         labels.append(label.numpy())
     classes = np.unique(labels)
     class_weights = class_weight.compute_class_weight(
