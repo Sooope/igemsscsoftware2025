@@ -8,9 +8,7 @@ from CNNs import getModel
 import load
 import datetime
 
-tf.config.optimizer.set_jit(False)
-
-config = 'Models/Classification/TF_CONFIG.json'
+config = './Models/Classification/TF_CONFIG.json'
 
 weights = None
 
@@ -23,10 +21,10 @@ os.environ["GRPC_VERBOSITY"] = "DEBUG"    # Enable gRPC debug logs
 
 # Class weight
 # WARNING: THIS WILL CONSUME A LOT OF MEMORY
-is_class_weight = False
-
+# is_class_weight = False
 
 cluster_resolver = tf.distribute.cluster_resolver.TFConfigClusterResolver()
+
 if cluster_resolver.task_type in ("worker", "ps"):
     # Start a TensorFlow server and wait.
 
@@ -41,6 +39,7 @@ if cluster_resolver.task_type in ("worker", "ps"):
         task_index=cluster_resolver.task_id,
         protocol=cluster_resolver.rpc_layer or "grpc",
         start=True)
+
     server.join()
 elif cluster_resolver.task_type == "evaluator":
     # Run sidecar evaluation
@@ -63,7 +62,8 @@ else:
 
     # weights of basemodel
     weights = None
-
+    
+        
     variable_partitioner = (
         tf.distribute.experimental.partitioners.MinSizePartitioner(
             min_shard_bytes=(256 << 10),
@@ -73,16 +73,44 @@ else:
         cluster_resolver,
         variable_partitioner=variable_partitioner
     )
+    per_worker_batch_size = Batch_size // strategy.num_replicas_in_sync
+    
+    coodinator = tf.distribute.experimental.coordinator.ClusterCoordinator(strategy)
+    
+    
+    def dataset_fn(input_context=None, is_training=True):
+    # input_context is sometimes provided by TF for sharding hints, may not be needed here
+    # Calculate batch size again inside the function in case it's needed.
+        effective_batch_size = Batch_size
+        if input_context:
+                effective_batch_size = input_context.get_per_replica_batch_size(Batch_size)
 
-    train_data, val_data, class_names = load.processImage(
+        # This function runs ON EACH WORKER
+        # We only need one of the datasets (train or val) per function.
+        train_ds, val_ds, _ = load.processImage(
+            data_set=ds, batch_size=effective_batch_size 
+        )
+        if is_training:
+            # Ensure dataset repeats indefinitely for training
+            return train_ds.repeat()
+        else:
+            return val_ds
+    
+    per_worker_val_dataset_fn=dataset_fn(is_training=False)
+    per_worker_train_dataset_fn=dataset_fn(is_training=True)
+    
+    per_worker_val_dataset=coodinator.create_per_worker_dataset(per_worker_val_dataset_fn)
+    per_worker_train_dataset=coodinator.create_per_worker_dataset(per_worker_train_dataset_fn)
+    
+    _,_, class_names = load.processImage(
         data_set=ds, batch_size=Batch_size
     )
-    
-    # calculate class weight
-    if is_class_weight:
-        class_weight = load.getClassWeight(train_data)
-    else:
-        class_weight = None
+        
+    # # calculate class weight
+    # if is_class_weight:
+    #     class_weight = load.getClassWeight(train_data)
+    # else:
+    #     class_weight = None
 
     with strategy.scope():
         model = getModel(
@@ -96,6 +124,7 @@ else:
             loss="sparse_categorical_crossentropy",
             metrics=["accuracy"],
         )
+        print("Model build in scope done")
 
     working_dir = "tmp/fit/"
     log_dir = os.path.join(working_dir,"logs/",datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
@@ -110,11 +139,11 @@ else:
     ]
 
     model.fit(
-        train_data,
-        validation_data=val_data,
+        per_worker_train_dataset,
+        validation_data=per_worker_val_dataset,
         epochs=Epoches,
         callbacks=callbacks,
-        class_weight=class_weight,
+        # class_weight=class_weight,
     )
-    model.save(model, name)
+    load.saveModel(model, name)
 
