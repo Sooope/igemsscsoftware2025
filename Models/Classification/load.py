@@ -1,6 +1,7 @@
 import tensorflow as tf
 import pathlib
 from sklearn.utils import class_weight
+import numpy as np
 
 dir = "./Data/"
 weights_dir = "./Models/Classification/weights/"
@@ -49,13 +50,16 @@ def processImage(
 
 # Class weight for imbalance dataset
 def getClassWeight(train_ds):
+    labels = []
+    for _,label in train_ds():
+        labels.append(label.numpy())
+    classes = np.unique(labels)
     class_weights = class_weight.compute_class_weight(
-        'balanced',
-        classes = train_ds.class_names,
-        y = train_ds.classes
+        class_weight="balanced",
+        classes=classes,
+        y=labels,
     )
-    return dict(enumerate(class_weights))
-
+    return {cls: weight for cls, weight in zip(classes, class_weights)}
 def saveModel(model,name):
     model.save_weights(weights_dir+name)
     model.save(model_dir+name+".h5")

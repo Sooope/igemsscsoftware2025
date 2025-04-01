@@ -8,39 +8,38 @@ import CBAM
 def getModel(num_neurons,class_num,weights=None,base="mnv2"):
     # Choose base model by changing keras.applicatoin._____
 
-    match base:
-        case "env2b3":
-            # EfficientNetV2B3
-            baseModel = keras.applications.EfficientNetV2B3(include_top=False, weights=weights)
-        case "rn50":
-            # ResNet50
-            baseModel = keras.applications.ResNet50(include_top=False, weights=weights)
-        case "rn101":
-            baseModel = keras.applications.ResNet101(include_top=False, weights=weights)
-        case "mnv2":
-            # MobileNetV2
-            baseModel = keras.applications.MobileNetV2(include_top=False, weights=weights)
-        case "iv3":
-            # InceptionV3
-            baseModel = keras.applications.InceptionV3(include_top=False, weights=weights)
-        case "vgg16":
-            # VGG16
-            baseModel = keras.applications.VGG16(include_top=False, weights=weights)
-        case "xcep":
-            # Xception
-            baseModel = keras.applications.Xception(include_top=False, weights=weights)
-        case "dn121":
-            # DenseNet121
-            baseModel = keras.applications.DenseNet121(include_top=False, weights=weights)
-        case "CBAM_RN50":
-            # CBAM ResNet50
-            baseModel = CBAM.CBAM_ResNet50()
-        case "CBAM_RN101":
-            # CBAM ResNet101
-            baseModel = CBAM.CBAM_ResNet101()
-        case _:
-            print("Wrong model id, fallback to EfficientNetV2B3")
-            baseModel = keras.applications.EfficientNetV2B3(include_top=False, weights=weights)
+    if base == "env2b3":
+        # EfficientNetV2B3
+        baseModel = keras.applications.EfficientNetV2B3(include_top=False, weights=weights)
+    elif base == "rn50":
+        # ResNet50
+        baseModel = keras.applications.ResNet50(include_top=False, weights=weights)
+    elif base == "rn101":
+        baseModel = keras.applications.ResNet101(include_top=False, weights=weights)
+    elif base == "mnv2":
+        # MobileNetV2
+        baseModel = keras.applications.MobileNetV2(include_top=False, weights=weights)
+    elif base == "iv3":
+        # InceptionV3
+        baseModel = keras.applications.InceptionV3(include_top=False, weights=weights)
+    elif base == "vgg16":
+        # VGG16
+        baseModel = keras.applications.VGG16(include_top=False, weights=weights)
+    elif base == "xcep":
+        # Xception
+        baseModel = keras.applications.Xception(include_top=False, weights=weights)
+    elif base == "dn121":
+        # DenseNet121
+        baseModel = keras.applications.DenseNet121(include_top=False, weights=weights)
+    elif base == "CBAM_RN50":
+        # CBAM ResNet50
+        baseModel = CBAM.CBAM_ResNet50()
+    elif base == "CBAM_RN101":
+        # CBAM ResNet101
+        baseModel = CBAM.CBAM_ResNet101()
+    else:
+        print("Wrong model id, fallback to EfficientNetV2B3")
+        baseModel = keras.applications.EfficientNetV2B3(include_top=False, weights=weights)
 
     model = keras.Sequential([load.data_augmentation(), baseModel, keras.layers.Flatten()])
     for i in range(len(num_neurons)):
