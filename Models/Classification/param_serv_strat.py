@@ -21,6 +21,11 @@ os.environ["TF_CONFIG"] = json.dumps(confjson)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "0"  # Enable full logging
 os.environ["GRPC_VERBOSITY"] = "DEBUG"    # Enable gRPC debug logs
 
+# Class weight
+# WARNING: THIS WILL CONSUME A LOT OF MEMORY
+is_class_weight = False
+
+
 cluster_resolver = tf.distribute.cluster_resolver.TFConfigClusterResolver()
 if cluster_resolver.task_type in ("worker", "ps"):
     # Start a TensorFlow server and wait.
@@ -72,6 +77,12 @@ else:
     train_data, val_data, class_names = load.processImage(
         data_set=ds, batch_size=Batch_size
     )
+    
+    # calculate class weight
+    if is_class_weight:
+        class_weight = load.getClassWeight(train_data)
+    else:
+        class_weight = None
 
     with strategy.scope():
         model = getModel(
@@ -103,7 +114,7 @@ else:
         validation_data=val_data,
         epochs=Epoches,
         callbacks=callbacks,
-        class_weight=load.getClassWeight(train_data),
+        class_weight=class_weight,
     )
     model.save(model, name)
 
