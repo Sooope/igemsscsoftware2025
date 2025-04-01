@@ -7,6 +7,7 @@ import json
 from CNNs import getModel
 import load
 import datetime
+from functools import partial
 
 config = './Models/Classification/TF_CONFIG.json'
 
@@ -96,8 +97,8 @@ else:
         else:
             return val_ds
     
-    per_worker_val_dataset_fn=dataset_fn(is_training=False)
-    per_worker_train_dataset_fn=dataset_fn(is_training=True)
+    per_worker_val_dataset_fn=partial(dataset_fn,is_training=False)
+    per_worker_train_dataset_fn=partial(dataset_fn,is_training=True)
     
     per_worker_val_dataset=coodinator.create_per_worker_dataset(per_worker_val_dataset_fn)
     per_worker_train_dataset=coodinator.create_per_worker_dataset(per_worker_train_dataset_fn)
